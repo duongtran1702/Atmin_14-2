@@ -40,6 +40,21 @@ const LoginBackground = memo(function LoginBackground() {
     );
 });
 
+function normalizeNameBasic(str: string) {
+    return str.toLowerCase().trim().replace(/\s+/g, ' ');
+}
+
+const VALID_NAME_WITH_DIACRITICS = normalizeNameBasic('Trần Thị Hiền Lương');
+const VALID_NAME_NO_DIACRITICS = normalizeNameBasic('Tran Thi Hien Luong');
+
+function toTitleCaseName(str: string) {
+    const normalized = normalizeNameBasic(str);
+    return normalized
+        .split(' ')
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+}
+
 export function Login() {
     const navigate = useNavigate();
     const [fullName, setFullName] = useState('');
@@ -47,22 +62,11 @@ export function Login() {
     const [error, setError] = useState('');
     const [shake, setShake] = useState(false);
 
-    function removeVietnameseTones(str: string) {
-        return str
-            .normalize('NFD') // tách dấu
-            .replace(/[\u0300-\u036f]/g, '') // xóa dấu
-            .replace(/đ/g, 'd')
-            .replace(/Đ/g, 'D');
-    }
-
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        // Chuẩn hóa fullname nhập vào
-        const normalizedName = removeVietnameseTones(fullName)
-            .toLowerCase()
-            .trim()
-            .replace(/\s+/g, ' ');
+        // Chuẩn hóa fullname nhập vào (chỉ xử lý khoảng trắng + hoa/thường)
+        const normalizedName = normalizeNameBasic(fullName);
 
         // Kiểm tra định dạng ngày sinh dd-mm
         const birthdayMatch = birthday.match(/^(\d{2})-(\d{2})$/);
@@ -76,11 +80,14 @@ export function Login() {
         const [, day, month] = birthdayMatch;
         const isCorrectBirthday = day === '16' && month === '12';
 
-        // Danh sách fullname hợp lệ
-        const validNames = ['tran thi hien luong'];
+        // Tên hợp lệ: hoặc đầy đủ dấu, hoặc không dấu hoàn toàn
+        const isCorrectName =
+            normalizedName === VALID_NAME_WITH_DIACRITICS ||
+            normalizedName === VALID_NAME_NO_DIACRITICS;
 
-        if (validNames.includes(normalizedName) && isCorrectBirthday) {
-            localStorage.setItem('userName', fullName);
+        if (isCorrectName && isCorrectBirthday) {
+            const displayName = toTitleCaseName(fullName);
+            localStorage.setItem('userName', displayName);
             localStorage.setItem('userBirthday', birthday);
             navigate('/landing');
         } else {
