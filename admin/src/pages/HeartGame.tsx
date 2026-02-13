@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router';
 import { motion } from 'motion/react';
-import { Heart, ArrowRight, ArrowLeft } from 'lucide-react';
+import { Heart, ArrowRight, ArrowLeft, Star, Sparkles, Smile } from 'lucide-react';
 import { FloatingHearts } from '../components/FloatingHearts';
 import { useState } from 'react';
 
@@ -14,14 +14,13 @@ const messages = [
     'Okay okay tui hiểu rồi',
     'Bấm hoài vậy 🙈',
     'Không chán luôn á?',
-    'Chơi game chứ gì~',
+    'Thích mini game này hẻ~',
     'Bấm nữa đi tui coi 👀',
     'Gan ghê ta',
     'Vui không? Hehe',
     'Bấm riết quen tay luôn rồi',
-    'Tui làm đó nha! 💕',
-    'Bấm nữa là tui rung tim đó',
-    'Tim rớt ra giờ 💓',
+    'Bấm nữa là tim tui rung đó',
+    'Tim rớt ra giờ nè ',
     'Thấy đáng yêu nên cho bấm á',
     'Chứ người khác là khóa web rồi 😌',
     'Ưu tiên riêng đó nha',
@@ -34,13 +33,48 @@ const messages = [
 ];
 
 const MAX_CLICKS = messages.length;
+const particleIcons = [Heart, Star, Sparkles, Smile];
+
+const feelingIcons = [
+    '💗',
+    '💓',
+    '💖',
+    '💘',
+    '💕',
+    '🥰',
+    '😍',
+    '😳',
+    '🤭',
+    '😊',
+    '😌',
+    '😘',
+    '😚',
+    '🤗',
+    '🤩',
+    '😇',
+    '😛',
+    '😜',
+    '😝',
+    '😋',
+    '🤫',
+    '😙',
+    '😻',
+    '💞',
+    '💝',
+    '💟',
+];
+
+const feelingPairs: [string, string][] = feelingIcons.map((icon, index) => [
+    icon,
+    feelingIcons[(index + 1) % feelingIcons.length],
+]);
 
 export function HeartGame() {
     const navigate = useNavigate();
     const [clickCount, setClickCount] = useState(0);
     const [particles, setParticles] = useState<
-        Array<{ id: number; x: number; y: number }>
-    >([]);
+                Array<{ id: number; x: number; y: number; iconIndex: number }>
+        >([]);
 
     const getMessageForClick = (count: number) => {
         if (count <= 0) return 'Bấm vào tim đi!';
@@ -57,7 +91,8 @@ export function HeartGame() {
         const rect = e.currentTarget.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
-        const newParticle = { id: Date.now(), x, y };
+        const iconIndex = Math.floor(Math.random() * particleIcons.length);
+        const newParticle = { id: Date.now(), x, y, iconIndex };
 
         setParticles((prev) => [...prev, newParticle]);
 
@@ -116,26 +151,29 @@ export function HeartGame() {
                                 <Heart className="w-24 h-24 sm:w-32 sm:h-32 md:w-44 md:h-44 text-pink-400 fill-pink-400" />
                             </motion.div>
 
-                            {particles.map((particle) => (
-                                <motion.div
-                                    key={particle.id}
-                                    initial={{ opacity: 1, scale: 1 }}
-                                    animate={{
-                                        opacity: 0,
-                                        scale: 2,
-                                        x: (Math.random() - 0.5) * 200,
-                                        y: -Math.random() * 200,
-                                    }}
-                                    transition={{ duration: 1 }}
-                                    className="absolute pointer-events-none"
-                                    style={{
-                                        left: particle.x,
-                                        top: particle.y,
-                                    }}
-                                >
-                                    <Heart className="w-10 h-10 text-pink-300 fill-pink-300" />
-                                </motion.div>
-                            ))}
+                              {particles.map((particle) => {
+                                                const Icon = particleIcons[particle.iconIndex];
+                                                return (
+                                                    <motion.div
+                                                        key={particle.id}
+                                                        initial={{ opacity: 1, scale: 1 }}
+                                                        animate={{
+                                                            opacity: 0,
+                                                            scale: 2,
+                                                            x: (Math.random() - 0.5) * 200,
+                                                            y: -Math.random() * 200,
+                                                        }}
+                                                        transition={{ duration: 1 }}
+                                                        className="absolute pointer-events-none"
+                                                        style={{
+                                                            left: particle.x,
+                                                            top: particle.y,
+                                                        }}
+                                                    >
+                                                        <Icon className="w-10 h-10 text-pink-300 fill-pink-300" />
+                                                    </motion.div>
+                                                );
+                                            })}
                         </motion.button>
                     </div>
 
@@ -161,21 +199,37 @@ export function HeartGame() {
                             y: 0,
                         }}
                         transition={{ duration: 0.4 }}
-                        className="bg-white/70 backdrop-blur-xl px-6 py-4 rounded-full inline-flex items-center gap-3 sm:gap-4 shadow-lg border border-white/60"
+                        className="bg-white/70 backdrop-blur-xl px-6 py-4 rounded-full inline-flex items-center justify-center gap-4 sm:gap-6 shadow-lg border border-white/60"
                     >
-                        <motion.div
-                            animate={{
-                                scale: [1, 1.15, 1],
-                            }}
-                            transition={{ duration: 0.8, repeat: Infinity }}
-                        >
-                            <Heart className="w-6 h-6 sm:w-7 sm:h-7 text-pink-500 fill-pink-300" />
-                        </motion.div>
-                        <p className="text-base sm:text-lg md:text-xl text-gray-700 font-medium handwriting">
-                            {clickCount === 0
-                                ? 'Tim đang chờ bạn chạm vào 💗'
-                                : 'Tim đang đập mạnh hơn rồi đó 💓'}
-                        </p>
+                        {(() => {
+                            const pairIndex = Math.min(
+                                clickCount,
+                                feelingPairs.length - 1,
+                            );
+                            const [currentIcon, nextIcon] = feelingPairs[pairIndex];
+
+                            return (
+                                <>
+                                    <motion.span
+                                        animate={{ scale: [1, 1.15, 1] }}
+                                        transition={{ duration: 0.8, repeat: Infinity }}
+                                        className="text-xl sm:text-2xl md:text-3xl"
+                                    >
+                                        {currentIcon}
+                                    </motion.span>
+                                    <motion.span
+                                        animate={{
+                                            scale: [1, 1.1, 1],
+                                            rotate: [-8, 8, -8],
+                                        }}
+                                        transition={{ duration: 1.2, repeat: Infinity }}
+                                        className="text-xl sm:text-2xl md:text-3xl"
+                                    >
+                                        {nextIcon}
+                                    </motion.span>
+                                </>
+                            );
+                        })()}
                     </motion.div>
 
                     {/* Navigation */}
