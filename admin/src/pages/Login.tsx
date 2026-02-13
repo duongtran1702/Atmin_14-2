@@ -1,8 +1,44 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import { useNavigate } from 'react-router';
 import { motion } from 'motion/react';
 import { Heart, Sparkles, Lock } from 'lucide-react';
 import { FloatingHearts } from '../components/FloatingHearts';
+
+const LoginBackground = memo(function LoginBackground() {
+    return (
+        <>
+            <FloatingHearts />
+
+            {/* Animated background shapes */}
+            <div className="absolute inset-0 overflow-hidden">
+                <motion.div
+                    animate={{
+                        scale: [1, 1.2, 1],
+                        rotate: [0, 90, 0],
+                    }}
+                    transition={{
+                        duration: 20,
+                        repeat: Infinity,
+                        ease: 'linear',
+                    }}
+                    className="absolute top-1/4 left-1/4 w-64 h-64 sm:w-96 sm:h-96 bg-pink-200/40 rounded-full blur-3xl"
+                />
+                <motion.div
+                    animate={{
+                        scale: [1.2, 1, 1.2],
+                        rotate: [90, 0, 90],
+                    }}
+                    transition={{
+                        duration: 15,
+                        repeat: Infinity,
+                        ease: 'linear',
+                    }}
+                    className="absolute bottom-1/4 right-1/4 w-64 h-64 sm:w-96 sm:h-96 bg-purple-200/40 rounded-full blur-3xl"
+                />
+            </div>
+        </>
+    );
+});
 
 export function Login() {
     const navigate = useNavigate();
@@ -56,35 +92,7 @@ export function Login() {
 
     return (
         <div className="min-h-screen bg-linear-to-br from-pink-100 via-purple-100 to-blue-100 relative overflow-hidden flex items-center justify-center px-5 py-10 sm:px-8 sm:py-16">
-            <FloatingHearts />
-
-            {/* Animated background shapes */}
-            <div className="absolute inset-0 overflow-hidden">
-                <motion.div
-                    animate={{
-                        scale: [1, 1.2, 1],
-                        rotate: [0, 90, 0],
-                    }}
-                    transition={{
-                        duration: 20,
-                        repeat: Infinity,
-                        ease: 'linear',
-                    }}
-                    className="absolute top-1/4 left-1/4 w-64 h-64 sm:w-96 sm:h-96 bg-pink-200/40 rounded-full blur-3xl"
-                />
-                <motion.div
-                    animate={{
-                        scale: [1.2, 1, 1.2],
-                        rotate: [90, 0, 90],
-                    }}
-                    transition={{
-                        duration: 15,
-                        repeat: Infinity,
-                        ease: 'linear',
-                    }}
-                    className="absolute bottom-1/4 right-1/4 w-64 h-64 sm:w-96 sm:h-96 bg-purple-200/40 rounded-full blur-3xl"
-                />
-            </div>
+            <LoginBackground />
 
             <motion.div
                 initial={{ opacity: 0, scale: 0.95, y: 20 }}
