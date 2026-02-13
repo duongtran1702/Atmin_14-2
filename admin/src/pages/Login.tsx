@@ -28,10 +28,10 @@ export function Login() {
             .trim()
             .replace(/\s+/g, ' ');
 
-        // Kiểm tra định dạng ngày sinh dd/mm
-        const birthdayMatch = birthday.match(/^(\d{2})\/(\d{2})$/);
+        // Kiểm tra định dạng ngày sinh dd-mm
+        const birthdayMatch = birthday.match(/^(\d{2})-(\d{2})$/);
         if (!birthdayMatch) {
-            setError('Ngày sinh phải đúng định dạng dd/mm nha');
+            setError('Ngày sinh phải đúng định dạng dd-mm nha');
             setShake(true);
             setTimeout(() => setShake(false), 500);
             return;
@@ -174,9 +174,9 @@ export function Login() {
                                 id="birthday"
                                 value={birthday}
                                 onChange={(e) => setBirthday(e.target.value)}
-                                placeholder="dd/mm"
+                                placeholder="dd-mm"
                                 inputMode="numeric"
-                                pattern="[0-9]{2}/[0-9]{2}"
+                                pattern="[0-9]{2}-[0-9]{2}"
                                 className="w-full px-5 py-4 rounded-xl border border-purple-200/50 bg-white/60 backdrop-blur-sm focus:bg-white/80 focus:outline-none focus:ring-2 focus:ring-purple-300/50 focus:border-transparent transition-all text-gray-700"
                                 required
                             />
